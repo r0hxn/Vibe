@@ -17,6 +17,7 @@ import { Suspense, useState } from "react";
 import { Fragment } from "@/generated/prisma"
 import { ProjectHeader } from "../components/project-header";
 import { FragmentWeb } from "../components/fragment-web";
+import { UserControl } from "@/components/user-control";
 
 interface Props {
   projectId: string;
@@ -71,6 +72,7 @@ export const ProjectView = ({ projectId }: Props) => {
                                         <CrownIcon /> Upgrade
                                     </Link>
                                 </Button>
+                                <UserControl />
                             </div>
                         </div>
                         <TabsContent value="preview">
