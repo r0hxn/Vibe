@@ -18,12 +18,15 @@ import { Fragment } from "@/generated/prisma"
 import { ProjectHeader } from "../components/project-header";
 import { FragmentWeb } from "../components/fragment-web";
 import { UserControl } from "@/components/user-control";
+import { useAuth } from "@clerk/nextjs";
 
 interface Props {
   projectId: string;
 }
 
 export const ProjectView = ({ projectId }: Props) => {
+    const { has } = useAuth();
+    const hasProAccess = has?.({ plan: "pro" });
     const [activeFragment, setActiveFragment] = useState<Fragment | null>(null);
     const [tabState, setTabState] = useState<"preview" | "code">("preview");
 
@@ -67,11 +70,13 @@ export const ProjectView = ({ projectId }: Props) => {
                                 </TabsTrigger>
                             </TabsList>
                             <div className="ml-auto flex items-center gap-x-2">
-                                <Button asChild size="sm" variant="tertiary">
-                                    <Link href="/pricing">
-                                        <CrownIcon /> Upgrade
-                                    </Link>
-                                </Button>
+                                {!hasProAccess && (
+                                    <Button asChild size="sm" variant="tertiary">
+                                        <Link href="/pricing">
+                                            <CrownIcon /> Upgrade
+                                        </Link>
+                                    </Button>
+                                )}
                                 <UserControl />
                             </div>
                         </div>
