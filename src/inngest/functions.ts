@@ -5,6 +5,7 @@ import { z } from "zod";
 import { inngest } from "./client";
 import { FRAGMENT_TITLE_PROMPT, PROMPT, RESPONSE_PROMPT } from "@/prompt";
 import { prisma } from "@/lib/db";
+import { SANDBOX_TIMEOUT } from "./types";
 
 interface AgentState {
   summary: string;
@@ -17,6 +18,7 @@ export const codeAgentFunction = inngest.createFunction(
   async ({ event, step }) => {
     const sandboxId = await step.run("get-sandbox-id", async () => {
       const sandbox = await Sandbox.create("vibe-nextjs-rohan-1234");
+      await sandbox.setTimeout(SANDBOX_TIMEOUT);
       return sandbox.sandboxId
     });
 
@@ -28,8 +30,9 @@ export const codeAgentFunction = inngest.createFunction(
           projectId: event.data.projectId,
         },
         orderBy: {
-          createdAt: "desc", // TODO: change to "asc" if AI doesn not understand what is the latest msg
+          createdAt: "asc", 
         },
+        take: 5,
       });
 
       for (const message of messages) {
@@ -40,7 +43,7 @@ export const codeAgentFunction = inngest.createFunction(
         });
       }
 
-      return formattedMessages;
+      return formattedMessages.reverse();
 
     });
 
